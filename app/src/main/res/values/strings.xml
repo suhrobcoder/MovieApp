@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Movie App</string>
+    <string name="loading_error">Yuklashda xatolik</string>
+    <string name="retry">Qayta urinish</string>
+    <string name="overview">Overview</string>
+    <string name="movie_search">Movie Search</string>
+    <string name="search_movie">Search Movie</string>
+    <string name="trailers">Trailers</string>
+    <string name="vote">%.1f/%d</string>
+    <string name="movie_length">%dh %dm</string>
+    <string name="movie_backdrop">Movie backdrop</string>
+</resources>
