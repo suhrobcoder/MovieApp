@@ -12,7 +12,9 @@ class ListConverter {
     fun stringToList(s: String): List<Int> {
         val list = ArrayList<Int>()
         for (i in s.split(" ")) {
-            list.add(i.toInt())
+            if (i.isNotEmpty()) {
+                list.add(i.toInt())
+            }
         }
         return list
     }

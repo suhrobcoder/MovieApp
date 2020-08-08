@@ -18,7 +18,7 @@ data class MovieInfo(
     @SerializedName("poster_path") val poster_path : String?,
     @SerializedName("production_companies") val production_companies : List<ProductionCompanies>,
     @SerializedName("production_countries") val production_countries : List<ProductionCountries>,
-    @SerializedName("release_date") val release_date : String,
+    @SerializedName("release_date") val release_date : String?,
     @SerializedName("revenue") val revenue : Int,
     @SerializedName("runtime") val runtime : Int,
     @SerializedName("spoken_languages") val spoken_languages : List<SpokenLanguages>,
