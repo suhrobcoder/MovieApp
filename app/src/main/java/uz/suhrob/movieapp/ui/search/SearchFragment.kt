@@ -1,46 +1,51 @@
 package uz.suhrob.movieapp.ui.search
 
-import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.core.os.bundleOf
+import androidx.core.view.doOnPreDraw
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.transition.Hold
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uz.suhrob.movieapp.R
 import uz.suhrob.movieapp.data.api.Resource
 import uz.suhrob.movieapp.extension.setupStatusBar
 import uz.suhrob.movieapp.extension.setupToolbar
-import uz.suhrob.movieapp.ui.BaseFragment
-import uz.suhrob.movieapp.util.MetricUtils
 
 
 @AndroidEntryPoint
-class SearchFragment: BaseFragment() {
+class SearchFragment: Fragment() {
     private val viewModel: SearchViewModel by viewModels()
+    private var query = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_search)
+        return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (!hasInitializedRootView) {
-            setupViews()
-            setHasOptionsMenu(true)
-        }
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+        setupViews()
+        setHasOptionsMenu(true)
         setupStatusBar(false)
         setupToolbar(search_toolbar)
+        exitTransition = Hold()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -49,13 +54,27 @@ class SearchFragment: BaseFragment() {
         val searchView: SearchView = searchItem.actionView as SearchView
         searchView.imeOptions = EditorInfo.IME_ACTION_DONE
         searchView.queryHint = "Search Movie"
+        searchView.post {
+            searchView.setQuery(query, false)
+        }
+        var job: Job? = null
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
+                if (query == newText || newText?.isEmpty() == true) return false
+                query = newText ?: ""
+                job?.cancel()
+                job = MainScope().launch {
+                    delay(500)
+                    viewModel.setQuery(newText)
+                }
                 return false
             }
 
             override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.setQuery(query)
+                job?.cancel()
+                job = MainScope().launch {
+                    viewModel.setQuery(query)
+                }
                 return false
             }
         })
@@ -76,38 +95,35 @@ class SearchFragment: BaseFragment() {
     private fun setupViews() {
         search_recyclerview.layoutManager = LinearLayoutManager(context)
         val searchAdapter = SearchAdapter()
-        searchAdapter.onItemClick = { movie ->
+        searchAdapter.onItemClick = { movie, view ->
+            val movieTransitionName = getString(R.string.movie_details_transition)
+            val extras = FragmentNavigatorExtras(view to movieTransitionName)
+            val directions = SearchFragmentDirections.actionSearchFragmentToDetailsFragment2(movie.id)
             findNavController().navigate(
-                R.id.action_searchFragment_to_detailsFragment2,
-                bundleOf("movieId" to movie.id))
+                directions,
+                extras
+            )
         }
 
         search_recyclerview.adapter = searchAdapter
-        search_recyclerview.addItemDecoration(getRecyclerViewDivider())
         viewModel.searchDataState.observe(viewLifecycleOwner, Observer {
             when(it.status) {
                 Resource.Status.SUCCESS -> {
                     searchAdapter.submitList(it.data)
+                    search_recyclerview.visibility = View.VISIBLE
                     search_progressbar.visibility = View.GONE
                 }
                 Resource.Status.LOADING -> {
                     search_progressbar.visibility = View.VISIBLE
+                    search_recyclerview.visibility = View.GONE
 
                 }
                 Resource.Status.ERROR -> {
                     Toast.makeText(context, "Yuklashda xatolik", Toast.LENGTH_SHORT).show()
                     search_progressbar.visibility = View.GONE
+                    search_recyclerview.visibility = View.GONE
                 }
             }
         })
-    }
-
-    private fun getRecyclerViewDivider(): DividerItemDecoration {
-        val divider = resources.getDrawable(R.drawable.divider)
-        val inset = MetricUtils.dpToPx(72)
-        val instDivider = InsetDrawable(divider, inset, 4, 4, 0)
-        val itemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-        itemDecoration.setDrawable(instDivider)
-        return itemDecoration
     }
 }

@@ -13,7 +13,7 @@ import uz.suhrob.movieapp.data.db.entities.Movie
 import uz.suhrob.movieapp.util.UrlUtils
 
 class SearchAdapter: ListAdapter<Movie, SearchAdapter.SearchViewHolder>(SearchDiffCallback()){
-    var onItemClick: ((Movie) -> Unit)? = null
+    var onItemClick: ((Movie, View) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder =
         SearchViewHolder(
@@ -34,8 +34,9 @@ class SearchAdapter: ListAdapter<Movie, SearchAdapter.SearchViewHolder>(SearchDi
                 .into(itemView.search_item_poster)
             itemView.search_item_title.text = movie.title
             itemView.setOnClickListener {
-                onItemClick?.invoke(movie)
+                onItemClick?.invoke(movie, itemView)
             }
+            itemView.transitionName = movie.id.toString()
         }
     }
 

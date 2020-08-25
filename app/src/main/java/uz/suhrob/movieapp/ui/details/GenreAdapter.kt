@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.genre_item.view.*
 import uz.suhrob.movieapp.R
 import uz.suhrob.movieapp.data.db.entities.Genre
+import uz.suhrob.movieapp.util.MetricUtils
 
 class GenreAdapter(private val genres: List<Genre>)
     : RecyclerView.Adapter<GenreAdapter.GenreViewHolder>() {
@@ -20,6 +21,18 @@ class GenreAdapter(private val genres: List<Genre>)
 
     override fun onBindViewHolder(holder: GenreViewHolder, position: Int) {
         holder.bind(genres[position])
+        if (position == 0) {
+            (holder.itemView.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                marginStart = MetricUtils.dpToPx(16)
+                marginEnd = MetricUtils.dpToPx(8)
+            }
+        }
+        if (position == itemCount - 1) {
+            (holder.itemView.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                marginEnd = MetricUtils.dpToPx(16)
+                marginStart = MetricUtils.dpToPx(8)
+            }
+        }
     }
 
     override fun getItemCount(): Int = genres.size

@@ -3,7 +3,6 @@ package uz.suhrob.movieapp.ui.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,7 @@ class MovieAdapter
     : ListAdapter<Movie, MovieAdapter.MovieViewHolder>(
     MovieDiffCallback()
 ) {
-    var onItemClick: ((Movie, ImageView) -> Unit)? = null
+    var onItemClick: ((Movie, View) -> Unit)? = null
     var loadMore: (() -> Unit)? = null
     private val fullList = ArrayList<Movie>()
     private var filterId = -1

@@ -51,14 +51,7 @@ class MainViewModel @ViewModelInject constructor(
                 is MovieStateEvent.LoadMore -> {
                     movieRepository.getPopular(loadMore = true)
                         .onEach {
-                            val data = arrayListOf<Movie>()
-                            if (_movieDataState.value != null && _movieDataState.value?.data != null) {
-                                data.addAll(_movieDataState.value?.data!!)
-                            }
-                            if (it.status == Resource.Status.SUCCESS) {
-                                data.addAll(it.data!!)
-                            }
-                            _movieDataState.value = Resource.success(data)
+                            _movieDataState.value = it
                         }
                         .launchIn(viewModelScope)
                 }

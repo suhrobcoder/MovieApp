@@ -17,7 +17,7 @@ interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(movie: Movie)
 
-    @Query("SELECT * FROM movie WHERE is_popular = 1")
+    @Query("SELECT * FROM movie WHERE is_popular = 1 ORDER BY popularity DESC")
     suspend fun getAllPopularMovies(): List<Movie>
 
     @Query("SELECT * FROM movie WHERE id = :id")

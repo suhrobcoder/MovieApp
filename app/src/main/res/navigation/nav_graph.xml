@@ -15,12 +15,11 @@
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_close_exit"
             app:popEnterAnim="@anim/fragment_open_exit"
-            app:popExitAnim="@anim/fragment_close_exit" />
-        <argument
-            android:name="movie_id"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
+            app:popExitAnim="@anim/fragment_close_exit">
+            <argument
+                android:name="movie_id"
+                app:argType="integer" />
+        </action>
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
@@ -42,11 +41,10 @@
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_close_exit"
             app:popEnterAnim="@anim/fragment_open_exit"
-            app:popExitAnim="@anim/fragment_close_exit"  />
-        <argument
-            android:name="movie_id"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
+            app:popExitAnim="@anim/fragment_close_exit">
+            <argument
+                android:name="movie_id"
+                app:argType="integer" />
+        </action>
     </fragment>
 </navigation>

@@ -50,12 +50,12 @@ class MovieRepository(
         emit(remoteDataSource.getMovie(movieId))
     }
 
-    suspend fun getPopular(refreshed: Boolean = false, loadMore: Boolean = false): Flow<Resource<List<Movie>>> = flow {
+    suspend fun getPopular(reload: Boolean = false, loadMore: Boolean = false): Flow<Resource<List<Movie>>> = flow {
         emit(Resource.loading())
-        if (loadMore || pref.popularMoviesLoadedPages == 0 || refreshed) {
+        if (loadMore || pref.popularMoviesLoadedPages == 0 || reload) {
             val data = remoteDataSource.getPopular(pref.popularMoviesLoadedPages + 1)
             if (data.status == Resource.Status.SUCCESS) {
-                if (refreshed) {
+                if (reload) {
                     movieDao.clearMovies()
                     pref.popularMoviesLoadedPages = 0
                 }
@@ -63,7 +63,7 @@ class MovieRepository(
                 pref.popularMoviesLoadedPages++
                 movieDao.insertPopularMovies(movies)
             } else {
-                if (!refreshed) {
+                if (!reload && !loadMore) {
                     emit(Resource.error(data.message))
                 }
             }

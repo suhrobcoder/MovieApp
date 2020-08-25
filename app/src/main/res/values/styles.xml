@@ -18,6 +18,11 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <style name="BackdropCornerStyle" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeBottomLeft">40dp</item>
+    </style>
+
     <style name="ChipTabLayout" parent="@style/Widget.Design.TabLayout">
         <item name="tabIndicatorColor">@android:color/transparent</item>
         <item name="tabBackground">@drawable/tab_selector</item>
